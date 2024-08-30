@@ -29,8 +29,13 @@ with app.app_context():
 #Crear rutas
 @app.route('/contacts', methods=['GET'])
 def get_contact():
-    return 'Lista de contactos'
+    contacts = Contact.query.all()
+    return jsonify({'contacts': [contact.serialize() for contact in contacts]})
 
 @app.route('/contacts', methods=['POST'])
 def create_contact():
-    return 'Se creo un contacto'
+    data = request.get_json()
+    contact = Contact(name=request.json['name'], email=request.json['email'], phone=request.json['phone'])
+    db.session.add(contact)
+    db.session.commit()
+    return f'Se ha creado el contacto {contact.serialize()}'
