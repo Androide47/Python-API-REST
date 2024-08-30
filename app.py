@@ -62,3 +62,12 @@ def update_contact(id):
     # Guardar los cambios en la base de datos
     db.session.commit()
     return jsonify({'message': 'Contacto actualizado con exito', 'contact': contact.serialize()})
+
+@app.route('/contacts/<int:id>', methods=['DELETE'])
+def delete_contact(id):
+    contact = Contact.query.get(id)
+    if not contact:
+        return jsonify({'message': 'Contacto no encontrado'}), 404
+    db.session.delete(contact)
+    db.session.commit()
+    return jsonify({'message': 'Contacto eliminado con exito'})
