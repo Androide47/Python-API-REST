@@ -38,4 +38,4 @@ def create_contact():
     contact = Contact(name=request.json['name'], email=request.json['email'], phone=request.json['phone'])
     db.session.add(contact)
     db.session.commit()
-    return f'Se ha creado el contacto {contact.serialize()}'
+    return jsonify({'message': 'Contacto creado con exito', 'contact': contact.serialize()})
