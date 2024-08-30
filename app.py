@@ -28,7 +28,7 @@ with app.app_context():
 
 #Crear rutas
 @app.route('/contacts', methods=['GET'])
-def get_contact():
+def get_contacts():
     contacts = Contact.query.all()
     return jsonify({'contacts': [contact.serialize() for contact in contacts]})
 
@@ -38,4 +38,27 @@ def create_contact():
     contact = Contact(name=request.json['name'], email=request.json['email'], phone=request.json['phone'])
     db.session.add(contact)
     db.session.commit()
-    return jsonify({'message': 'Contacto creado con exito', 'contact': contact.serialize()})
+    return jsonify({'message': 'Contacto creado con exito', 'contact': contact.serialize()}), 201
+
+
+@app.route('/contacts/<int:id>', methods=['GET'])
+def get_contact(id):
+    contact = Contact.query.get(id)
+    if not contact:
+        return jsonify({'message': 'Contacto no encontrado'}), 404 
+    return jsonify( contact.serialize() )
+
+@app.route('/contacts/<int:id>', methods=['PUT'])
+def update_contact(id):
+    contact = Contact.query.get_or_404(id)
+    data = request.get_json()
+
+    if 'name' in data:
+        contact.name = data['name']
+    if 'email' in data:
+        contact.email = data['email']
+    if 'phone' in data:
+        contact.phone = data['phone']
+    # Guardar los cambios en la base de datos
+    db.session.commit()
+    return jsonify({'message': 'Contacto actualizado con exito', 'contact': contact.serialize()})
